@@ -27,59 +27,18 @@ def convert_graph_weight(a):
     for i in range (len(a)):
         for j in range(len(a[i])):
             if a[i][j] != 0:
-                adjList[i].append((j, a[i][j]))
+                adjList[i].append((a[i][j], j))
     return adjList
 
 
 
-def BFS(graph, start, end):
-
-    visited = []
-    frontier = Queue()
-    # them node start vao frontier va visiter
-    frontier.put(start)
-    visited.append(start)
-
-    # start khong co node cha
-    parent = dict()
-    parent[start] = None
-
-    path_found = False
-
-    while True:
-            
-        if frontier.empty():
-            print("No path found")
-            return [] 
-        
-        current_node = frontier.get()
-        visited.append(current_node)
-
-        # Kiem tra current_node co la end hay khong
-        if current_node == end:
-            path_found = True
-            break
-
-        for node in graph[current_node]:
-            if node not in visited:
-                frontier.put(node)
-                parent[node] = current_node
-                visited.append(node)
-
-    # Xay dung duong di
-    path = []
-    if path_found:
-        path.append(end)
-        while parent[end] is not None:
-            path.append(parent[end])
-            end = parent[end]
-        path.reverse()
-    return path
-
 
 def UCS(graph, start, end):
+
     visited = []
     frontier = PriorityQueue()
+    exist = dict()
+
     # them node start vao frontier va visited
     frontier.put((0,start))
     visited.append(start)
@@ -87,11 +46,17 @@ def UCS(graph, start, end):
     # start khong co node cha
     parent = dict()
     parent[start] = None
+
+    exist[start] = 0
+
     path_found = False
+
     while True:
         if frontier.empty():
             print("No path found")
-            return 0, [] 
+            return 0, []
+
+
         current_w, current_node = frontier.get()
         visited.append(current_node)
 
@@ -101,12 +66,18 @@ def UCS(graph, start, end):
             break
 
         for nodei in graph[current_node]:
-            node, weight = nodei
+            weight, node = nodei
             if node not in visited:
-                frontier.put((current_w + weight, node))
-                parent[node] = current_node
-                visited.append(node)
+                new_weight = weight + current_w
+                frontier.put((new_weight, node))
 
+                if node not in exist:
+                    parent[node] = current_node
+                    exist[node] = new_weight
+                else:
+                    if new_weight < exist[node]:
+                        parent[node] = current_node
+                        exist[node] = new_weight
 
     # Xay dung duong di
     path = []
@@ -120,75 +91,76 @@ def UCS(graph, start, end):
     return current_w, path
 
 
-def DFS(graph, start, end):
-    visited = []
-    frontier = []
+# def DFS(graph, start, end):
 
-    # Thêm node start vào frontier và visited
-    frontier.append(start)
-    visited.append(start)
+#     visited = []
+#     frontier = []
 
-    # start không có node cha
-    parent = dict()
-    parent[start] = None
+#     # Thêm node start vào frontier và visited
+#     frontier.append(start)
+# #    visited.append(start)
 
-    path_found = False
+#     # start không có node cha
+#     parent = dict()
+#     parent[start] = None
 
-    while True:
-        if frontier == []:
-            raise Exception("No way Exception")
-        current_node = frontier.pop()
-        visited.append(current_node)
+#     path_found = False
 
-        # Kiểm tra current_node có là end hay không
-        if current_node == end:
-            path_found = True
-            break
+#     while True:
+#         if frontier == []:
+#             print("No path found")
+#             return [] 
+        
+#         current_node = frontier.pop()
 
-        for node in graph[current_node]:
-            if node not in visited:
-                frontier.append(node)
-                parent[node] = current_node
-                visited.append(node)
+#         # Kiểm tra current_node có là end hay không
+#         if current_node == end:
+#             path_found = True
+#             break
 
-    # Xây dựng đường đi
-    path = []
-    if path_found:
-        path.append(end)
-        while parent[end] is not None:
-            path.append(parent[end])
-            end = parent[end]
-        path.reverse()
+#         for node in graph[current_node]:
+#             if node not in visited:
+#   #              if node not in frontier:
+#                     frontier.append(node)
+#                     parent[node] = current_node
 
-    return path
+#         visited.append(current_node)
+
+#     # Xây dựng đường đi
+#     path = []
+#     if path_found:
+#         path.append(end)
+#         while parent[end] is not None:
+#             path.append(parent[end])
+#             end = parent[end]
+#         path.reverse()
+
+#     return path
 
 
 
 
 if __name__ == "__main__":
     # Đọc file Input.txt và InputUCS.txt
-    file_1 = open("Input.txt", "r")
+    #file_1 = open("Input.txt", "r")
     file_2 = open("InputUCS.txt", "r")
-    size_1, start_1, goal_1, matrix_1 = read_txt(file_1)
+    #size_1, start_1, goal_1, matrix_1 = read_txt(file_1)
     size_2, start_2, goal_2, matrix_2 = read_txt(file_2)
-    file_1.close()
+    #file_1.close()
     file_2.close()
     
-    graph_1 = convert_graph(matrix_1)
+    #graph_1 = convert_graph(matrix_1)
     graph_2 = convert_graph_weight(matrix_2)
-    print(start_2)
-    print(goal_2)
-    print(matrix_2)
-    print(graph_2)
 
-    # Thực thi thuật toán BFS
+
+    # #Thực thi thuật toán BFS
     # result_bfs = BFS(graph_1, start_1, goal_1)
     # print("Result: \n", result_bfs)
-
-    # Thực thi thuật toán DFS
-    result_dfs = DFS(graph_1, start_1, goal_1)
-    print("Result DFS: \n", result_dfs)
+ 
+    # # Thực thi thuật toán DFS
+    # result_dfs = DFS(graph_1, start_1, goal_1)
+    # print("Result DFS: \n", result_dfs)
 
     # Thực thi thuật toán UCS
-    # cost, result_ucs = UCS(graph_2, start_2, goal_2)
-    # print("Result UCS: \n", result_ucs, "with Cost", cost)
+    cost, result_ucs = UCS(graph_2, start_2, goal_2)
+    print("Result UCS: \n", result_ucs, "with Cost", cost)
