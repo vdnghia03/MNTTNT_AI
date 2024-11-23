@@ -183,6 +183,8 @@ def search(graph, start, goal, func):
     closed = set()
     queue = PriorityQueue()
     queue.put((0 + func(graph, start), start))
+    if start not in closed:
+        closed.add(start)
     while not queue.empty():
         cost, node = queue.get()
         if node == goal:
@@ -193,6 +195,7 @@ def search(graph, start, goal, func):
                 closed.add(i)
                 i.g = new_cost
                 i.pre = node
+                new_cost = func((graph, i))
                 queue.put((new_cost, i))
     return None
 
@@ -234,7 +237,7 @@ def main():
         a = a.pre
     result.reverse()
 
-    print_res = [(point, point.polygon_id) for point in result]
+    print_res = [[point, point.polygon_id] for point in result]
     print(*print_res, sep=' -> ')
     plt.figure()
     plt.plot([start.x], [start.y], 'ro')
